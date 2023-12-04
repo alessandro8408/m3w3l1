@@ -8,7 +8,7 @@ In particolare, vengono passati come parametri:
 	`hKey`, la chiave di Root a cui appartiene la chiave a cui voglio accedere
 Questo permette l'accesso alla chiave.
 Se si è riusciti ad ottenere accesso, allora si procede all'impostazione del valore
-con la funzione `RegSetValueExW`:
+con la funzione `RegSetValueEx`:
 inizialmente effetto un `push` sullo stack dell'indirizzo che localizza
 la stringa contenente il valore da scrivere sulla chiave. In questo modo passo
 un puntatore alla stringa come parametro per la funzione `lstrlenW` che
