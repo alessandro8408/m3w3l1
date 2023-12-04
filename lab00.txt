@@ -1,0 +1,30 @@
+Persistenza ottenuta scrivendo su chiave di registro localizzata in
+"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+utilizzando la funzione `RegOpenKeyEx`
+In particolare, vengono passati come parametri:
+	`samDesired = 2`, che corrisponde a HKEY_SET_VALUE
+	`ulOptions`, non visibile
+	`SubKey`, il percorso verso la chiave a cui vuoi accedere
+	`hKey`, la chiave di Root a cui appartiene la chiave a cui voglio accedere
+Questo permette l'accesso alla chiave.
+Se si è riusciti ad ottenere accesso, allora si procede all'impostazione del valore
+con la funzione `RegSetValueExW`:
+inizialmente effetto un `push` sullo stack dell'indirizzo che localizza
+la stringa contenente il valore da scrivere sulla chiave. In questo modo passo
+un puntatore alla stringa come parametro per la funzione `lstrlenW` che
+ritorna la lunghezza della stringa.
+Un indicatore di tale lunghezza insieme alla stringa del valore da scrivere 
+sulla chiave, il tipo del valore della chiave e un parametro riservato che 
+deve essere nullo, il nome della chiave di registro che vuoi scrivere e
+la chiave di root, sono tutti parametri che vengono aggiunti allo stack per
+essere passati alla funzione `RegSetValueEx`, che scrive effettivamente il valore
+alla chiave corrispondente.
+Quest'ultimo processo avviene solamente se se si è riusciti ad accedere
+alla chiave di registro desiderata con la funzione `RegOpenKeyEx`.
+Si può notare dal salto condizionato `jnz` sul valore di `eax`.
+
+------------------------------
+Il malware in questione utilizza la funzione `InternetOpen` per effettuare
+la connessione a internet. Successivamente `InternetOpenUrl` permette il
+collegameno a un URL, che possiamo vedere dal commento del disassemblatore
+essere "http://www.malware12.com"
